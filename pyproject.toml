@@ -1,0 +1,63 @@
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 119
+lines_after_imports = 2
+include_trailing_comma = true
+skip = ["migrations/*.py", "venv"]
+
+
+[tool.black]
+line-length = 119
+target-version = ['py310']
+include = '\.pyi?$'
+indent_size=4
+
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+allow_subclassing_any = true
+allow_untyped_calls = true
+pretty = true
+show_error_codes = true
+implicit_reexport = true
+allow_untyped_decorators = true
+warn_unused_ignores = false
+warn_return_any = false
+namespace_packages = true
+plugins = ["pydantic.mypy"]
+
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning",
+    "ignore:.*unclosed.*:ResourceWarning",
+]
+env = [
+    "DB_BASE=backend_test",
+    "ENVIRONMENT=test",
+]
+
+
+[tool.aerich]
+tortoise_orm = "app.db.TORTOISE_ORM"
+location = "./migrations"
+src_folder = "./."
+
+
+[tool.flake8]
+ignore = "E501, E265, F811, B008, B010, PT001, VNE003, DJ01, PIE783, PIE785, SIM113, SIM102, FS003, W504, PIE801, E203"
+per-file-ignores = [
+    "__init__.py:F401, ABS101" # F401 imported but unused, ABS101 Relative import found
+]
+max-line-length = "160"
+exclude =[
+      "static",
+      "migrations",
+      "frontend",
+      ".git",
+      "__pycache__",
+      "docs"]
+

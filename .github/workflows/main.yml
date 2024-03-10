@@ -1,0 +1,49 @@
+name: Tests
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: test-${{ github.ref }}
+      cancel-in-progress: true
+    services:
+      postgres:
+        image: postgres:13.6-bullseye
+        env:
+          POSTGRES_PASSWORD: backend
+          POSTGRES_USER: backend
+          POSTGRES_DB: backend
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        id: setup-python
+        with:
+          python-version-file: '.python-version'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run the tests
+        env:
+          BACKEND_DB_HOST: localhost
+          BACKEND_DB_PORT: 5432
+          BACKEND_DB_USER: backend
+          BACKEND_DB_PASS: backend
+          BACKEND_DB_BASE: backend
+        run: |
+          pytest .
+
+# TODO: Optimize this CI to include caching.
